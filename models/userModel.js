@@ -1,24 +1,19 @@
+//----------- MONGOOSE -------------//
 const mongoose = require("mongoose");
 
+//------------ SCHEMA --------------//
 const UserSchema = mongoose.Schema({
-  firstname: {
-    type: String,
-    minLength: 1,
-    maxLength: 30,
-  },
-  surname: {
-    type: String,
-    minLength: 1,
-    maxLength: 30,
-  },
+  username: { type: String, unique: true },
   email: {
-    unique: true,
     type: String,
+    unique: true,
+    required: true,
   },
   password: {
     type: String,
-    minLength: 8,
+    minLength: 6,
     maxLength: 100,
+    required: true,
   },
 });
 
