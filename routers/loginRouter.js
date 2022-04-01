@@ -22,30 +22,30 @@ const secret = process.env.DB_SECRET;
 router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
-  // Check email
+  //* Check email
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({
-      message: "ERROR 400 - Invalid email",
+    return res.status(401).json({
+      message: "ERROR 401 - Incorrect email",
     });
   }
-  //-------- Compare user's password to hash in database -----------//
+  //* Compare user's password to hash in database
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    return res.status(400).json({
-      message: "ERROR 400 - Invalid password",
+    return res.status(401).json({
+      message: "ERROR 401 - Incorrect password",
     });
   }
 
-  //   Generate a token
+  //* Generate a token
   const token = jwt.sign({ id: user._id }, secret);
 
-  //--------- Add token to cookie -----------//
+  //* Add token to cookie
   res.cookie("jwt", token, { httpOnly: true, secure: false });
 
-  //---------- Send cookie to user ----------//
-  res.json({ message: "Cookie sent !" });
+  //* Send cookie to user
+  res.status(200).json({ message: "Cookie sent !" });
 });
 
 module.exports = router;

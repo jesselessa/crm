@@ -20,18 +20,19 @@ app.use(express.json());
 //---------------- ROUTERS ------------------//
 const registerRouter = require("./routers/registerRouter");
 const loginRouter = require("./routers/loginRouter");
-// const contactsRouter = require("./routers/contactRouter");
+const contactsRouter = require("./routers/contactsRouter");
+const logoutRouter = require("./routers/logoutRouter");
 
 //----------------- ROUTES ------------------//
 app.use("/register", registerRouter);
 app.use("/login", loginRouter);
-// app.use("/contacts", contactsRouter);
-
+app.use("/contacts", contactsRouter);
+app.use("/logout", logoutRouter);
 app.get("*", (_req, res) => {
   res.status(404).send("Error 404 - Not found");
 });
 
-// START SERVER
+//-------------- START SERVER -----------------//
 app.listen(port, () => {
   console.log(`Server listening at : http//localhost:${port}`);
 });
