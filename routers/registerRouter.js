@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
     });
   }
   res.status(201).json({
-    message: "New user  created",
+    message: "New user created",
   });
 });
 

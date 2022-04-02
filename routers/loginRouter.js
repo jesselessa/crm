@@ -13,6 +13,8 @@ dotenv.config({ path: "./config.env" });
 const User = require("../models/userModel");
 
 //------------- MIDDLEWARE ---------------//
+
+//* Working with cookies in server
 router.use(cookieParser());
 
 //------------- SECRET --------------//
@@ -42,11 +44,11 @@ router.post("/", async (req, res) => {
 
   // *! 3.1 - Generate a token with jsonwebtoken
   const token = jwt.sign({ id: user._id }, secret);
-  // *! 3.2 - Store token in a cookie called "jwt" and send it to client in response
+  // *! 3.2 - Store token in a cookie called "jwt" and send it to client in response with a message of successful login
   return res
     .cookie("jwt", token, { httpOnly: true, secure: false })
     .status(200)
-    .json({ message: "Cookie sent - You logged in successfully" });
+    .json({ message: "You logged in successfully" });
 });
 
 module.exports = router;

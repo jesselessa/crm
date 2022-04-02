@@ -24,19 +24,17 @@ const authorization = (req, res, next) => {
     // *! 4 - Create req.userId and assign the value of the id in the token (same for req.userRole)
     req.userId = data.id;
     req.userRole = data.role;
-    // *! 5 - Access given to controller
-    return next();
   } catch (error) {
     return res.status(403).json({
       message: "Forbidden access ! You have to login first.",
     });
   }
-  // // *! 5 - Access given to controller
-  // next();
+  // *! 5 - Access given to controller
+  next();
 };
 
 //---------------- ROUTE ---------------------//
-// * 1 - Remove value from cookie (remove jwt) and add authorization middleware from our new route
+// * 1 - Remove value from cookie (remove jwt) and add authorization middleware to our new route
 router.get("/", authorization, (_req, res) => {
   try {
     return res

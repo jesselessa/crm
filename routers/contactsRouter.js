@@ -3,46 +3,43 @@ const router = express.Router();
 //------------- AUTHENTIFICATION --------------//
 const jwt = require("jsonwebtoken");
 const secret = process.env.DB_SECRET;
+const cookieParser = require("cookie-parser");
+
 //------------------- MODELS ------------------//
 const Contact = require("../models/contactModel");
 const User = require("../models/userModel");
 
-//--------------- MIDDLEWARE -----------------//
+//--------------- MIDDLEWARES -----------------//
 
-//* Check if the incoming request has a jwt
+//* Working with cookies in server
+router.use(cookieParser());
+
+//* Check if incoming request has our cookie (called "jwt")
 const authorization = (req, res, next) => {
+  // *! 1 - If no cookie, access to controller prohibited
   const token = req.cookies.jwt;
   if (!token) {
-    return res.status(403).json({
+    res.status(403).json({
       message: "Forbidden access ! You have to login first.",
-      error: `${error}`,
     });
   }
+  // *! 2 - If cookie, check token to obtain data ; however, if error, access to controller prohibited
   try {
+    // *! 3- Declare new properties in the request object to make it easier for us to access token's data
     const data = jwt.verify(token, secret);
+    // *! 4 - Create req.userId and assign the value of the id in the token (same for req.userRole)
     req.userId = data.id;
-    console.log("User authentified - Access granted");
-    return next();
+    req.userRole = data.role;
   } catch (error) {
     return res.status(403).json({
       message: "Forbidden access ! You have to login first.",
-      error: `${error}`,
     });
   }
+  // *! 5 - Access given to controller
+  next();
 };
 
 //---------------- ROUTES ---------------------//
-
-//* Get all user's contacts
-router.get("/:userId", authorization, async (req, res) => {
-  const contacts = await Contact.find({ userId: req.params.userId }).select(
-    "-__v"
-  );
-  res.status(200).json({
-    data: contacts,
-    nb: userContacts.length,
-  });
-});
 
 //* Create a new contact
 router.post("/:userId", authorization, async (req, res) => {
@@ -60,18 +57,26 @@ router.post("/:userId", authorization, async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       message: "Something went wrong",
-      error: `${error}`,
     });
   }
+});
+
+//* Get all user's contacts
+router.get("/:userId", authorization, async (req, res) => {
+  const contacts = await Contact.find({ userId: req.params.userId });
+  res.status(200).json({
+    data: contacts,
+    nb: contacts.length, //usersContacts
+  });
 });
 
 //* Update a contact
 router.put("/:userId/:contactId", authorization, async (req, res) => {
   try {
-    const contact = await Contact.findOne(
-      { _id: req.params.contactId },
-      { userId: req.params.userId }
-    ).findByIdAndUpdate(contact._id, req.body);
+    const contact = await Contact.findByIdAndUpdate(req.params.contactId, {
+      name: req.body.name,
+      ...req.body,
+    });
     res.status(201).json({
       message: "Contact updated",
       description: contact,
@@ -80,7 +85,6 @@ router.put("/:userId/:contactId", authorization, async (req, res) => {
     console.log(error);
     res.status(400).json({
       message: "Something went wrong",
-      error: `${error}`,
     });
   }
 });
@@ -88,15 +92,11 @@ router.put("/:userId/:contactId", authorization, async (req, res) => {
 //* Delete a contact
 router.delete("/:userId/:contactId", authorization, async (req, res) => {
   try {
-    const contact = await Contact.findOneAndDelete(
-      { _id: req.params.contactId },
-      { userId: req.params.userId }
-    );
+    await Contact.findOneAndDelete(req.params.contactId);
     res.status(200).json({ message: "Contact deleted" });
   } catch (error) {
     return res.status(400).json({
       message: "Something went wrong",
-      error: `${error}`,
     });
   }
 });
