@@ -1,4 +1,4 @@
-//--------- EXPRESS - MONGOOSE ------------//
+//---------------- EXPRESS ------------------//
 const express = require("express");
 const router = express.Router();
 //------------ AUTHENTIFICATION -------------//
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
   //* 3 - Authentification
 
   // *! 3.1 - Generate a token with jsonwebtoken
-  const token = jwt.sign({ id: user._id }, secret);
+  const token = jwt.sign({ id: user._id }, secret, { expiresIn: "120s" });
   // *! 3.2 - Store token in a cookie called "jwt" and send it to client in response with a message of successful login
   return res
     .cookie("jwt", token, { httpOnly: true, secure: false })
