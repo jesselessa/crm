@@ -89,6 +89,19 @@ router.put("/:userId/:contactId", authorization, async (req, res) => {
   }
 });
 
+//* Search by query strings
+router.get("/:userId/filter", authorization, async (req, res) => {
+  try {
+    const contact = await Contact.find(req.query);
+    console.log(req);
+    res.status(200).json(contact);
+  } catch (error) {
+    return res.status(400).json({
+      message: "Something went wrong",
+    });
+  }
+});
+
 //* Delete a contact
 router.delete("/:userId/:contactId", authorization, async (req, res) => {
   try {
