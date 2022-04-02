@@ -9,7 +9,7 @@ const User = require("../models/userModel");
 
 //--------------- ROUTE -----------------//
 router.post("/", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { email, password } = req.body;
 
   const user = await User.findOne({ email });
   // Check if email already exists in DB
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
   if (!regex.test(password)) {
     return res.status(400).json({
       message:
-        "ERROR 400 - Your password must contain at least 6 characters and one digit",
+        "ERROR 400 - Your password must contain at least 6 characters with at least one digit",
     });
   }
 
@@ -36,12 +36,12 @@ router.post("/", async (req, res) => {
   // Create a new user
   try {
     const user = await User.create({
-      username: username,
       email: email,
       password: hashedPassword,
     });
     console.log("user : ", user);
   } catch (error) {
+    console.log(error);
     return res.status(400).json({
       message: "ERROR 400 - Invalid email or password",
     });

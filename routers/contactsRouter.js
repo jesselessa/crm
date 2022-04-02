@@ -22,13 +22,13 @@ const authorization = (req, res, next) => {
     const data = jwt.verify(token, secret);
     req.userId = data.id;
     console.log("User authentified - Access granted");
+    return next();
   } catch (error) {
     return res.status(403).json({
       message: "Forbidden access ! You have to login first.",
       error: `${error}`,
     });
   }
-  next();
 };
 
 //---------------- ROUTES ---------------------//

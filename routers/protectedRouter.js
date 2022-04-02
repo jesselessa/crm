@@ -1,12 +1,11 @@
 const express = require("express");
+const { route } = require("./logoutRouter");
 const router = express.Router();
 //------------- AUTHENTIFICATION --------------//
 const jwt = require("jsonwebtoken");
 const secret = process.env.DB_SECRET;
-const cookieParser = require("cookie-parser");
 
 //--------------- MIDDLEWARES -----------------//
-router.use(cookieParser());
 
 //* Check if incoming request has our cookie (called "jwt")
 const authorization = (req, res, next) => {
@@ -24,7 +23,7 @@ const authorization = (req, res, next) => {
     // *! 4 - Create req.userId and assign the value of the id in the token (same for req.userRole)
     req.userId = data.id;
     req.userRole = data.role;
-    // *! 5 - Access given to controller
+    // 5 - Access given to controller
     return next();
   } catch (error) {
     return res.status(403).json({
@@ -35,24 +34,12 @@ const authorization = (req, res, next) => {
   // next();
 };
 
-//---------------- ROUTE ---------------------//
-// * 1 - Remove value from cookie (remove jwt) and add authorization middleware from our new route
-router.get("/", authorization, (_req, res) => {
-  try {
-    return res
-      .clearCookie("jwt")
-      .status(200)
-      .json({
-        message: "You have successfully logged out!",
-      })
-      .redirect("/");
-  } catch (error) {
-    return res.status(401).json({
-      message: "Your token is not valid",
-      error: `
-            ${error}}`,
-    });
-  }
-});
+//------------------ ROUTE --------------------//
 
+//* We create a route which allows us to get the data from jwt. It can only be accessed if we have access to the jwt that is inside the cookie. If we don't, we will get an error.
+//* Then we'll be able to make use of the new properties that we added to the request
+
+router.get("/", authorization, (req, res) => {
+  return res.json({ user: { id: req.userId, role: req.userRole } });
+});
 module.exports = router;

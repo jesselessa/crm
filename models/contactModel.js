@@ -8,6 +8,8 @@ const ContactSchema = mongoose.Schema({
   email: { type: String, required: true },
   description: { type: String, required: true },
   category: { type: Number, required: true },
+  // To disable the "_v" attribute in our Schema
+  // versionKey: false,
 });
 
 const Contact = mongoose.model("Contact", ContactSchema);

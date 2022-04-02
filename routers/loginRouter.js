@@ -22,14 +22,14 @@ const secret = process.env.DB_SECRET;
 router.post("/", async (req, res) => {
   const { email, password } = req.body;
 
-  //* Check email
+  //* 1- Check email
   const user = await User.findOne({ email });
   if (!user) {
     return res.status(401).json({
       message: "ERROR 401 - Incorrect email",
     });
   }
-  //* Compare user's password to hash in database
+  //* 2 - Compare user's password to hash in database
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
@@ -38,14 +38,15 @@ router.post("/", async (req, res) => {
     });
   }
 
-  //* Generate a token
+  //* 3 - Authentification
+
+  // *! 3.1 - Generate a token with jsonwebtoken
   const token = jwt.sign({ id: user._id }, secret);
-
-  //* Add token to cookie
-  res.cookie("jwt", token, { httpOnly: true, secure: false });
-
-  //* Send cookie to user
-  res.status(200).json({ message: "Cookie sent !" });
+  // *! 3.2 - Store token in a cookie called "jwt" and send it to client in response
+  return res
+    .cookie("jwt", token, { httpOnly: true, secure: false })
+    .status(200)
+    .json({ message: "Cookie sent - You logged in successfully" });
 });
 
 module.exports = router;

@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 
 //------------ SCHEMA --------------//
 const UserSchema = mongoose.Schema({
-  username: { type: String, unique: true },
   email: {
     type: String,
     unique: true,
@@ -15,6 +14,8 @@ const UserSchema = mongoose.Schema({
     maxLength: 100,
     required: true,
   },
+  // To disable the "_v" attribute in our Schema
+  // versionKey: false,
 });
 
 const User = mongoose.model("User", UserSchema);

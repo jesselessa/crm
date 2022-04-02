@@ -22,12 +22,14 @@ const registerRouter = require("./routers/registerRouter");
 const loginRouter = require("./routers/loginRouter");
 const contactsRouter = require("./routers/contactsRouter");
 const logoutRouter = require("./routers/logoutRouter");
+const protectedRouter = require("./routers/protectedRouter");
 
 //----------------- ROUTES ------------------//
 app.use("/register", registerRouter);
 app.use("/login", loginRouter);
 app.use("/contacts", contactsRouter);
 app.use("/logout", logoutRouter);
+app.use("/protected", protectedRouter);
 app.get("*", (_req, res) => {
   res.status(404).send("Error 404 - Not found");
 });
